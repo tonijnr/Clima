@@ -1,5 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:dropdown_search/dropdown_search.dart';
+import 'package:uniclima/constants/api_constants.dart';
+import 'package:uniclima/model/clima_model.dart';
+import 'package:http/http.dart' as http;
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -41,6 +46,24 @@ class _HomeState extends State<Home> {
   ];
 
   String _cidadeSelecionada = 'São Paulo';
+  late ClimaModel climaModel;
+
+  carregaClima() async {
+    final params= {
+      'q': _cidadeSelecionada,
+      'appind': ApiConstants.apiKey,
+      'units': ApiConstants.units,
+      'lang': ApiConstants.long
+    };
+
+    final climaResponse
+    = await http.get(Uri.http(ApiConstants.apiUrl, ApiConstants.weatherPath, params));
+
+    if(climaResponse.statusCode == 200){
+      ClimaModel.fromJson(jsonDecode(climaResponse.body));
+    }
+
+  }
 
   @override
   Widget build(BuildContext context) {
